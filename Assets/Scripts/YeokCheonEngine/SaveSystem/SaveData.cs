@@ -23,6 +23,9 @@ namespace YeokCheonEngine.SaveSystem
         public int    RealmTier      = 0;
         public double CurrentExp     = 0;
         public long   LastTickAt     = 0; // Unix timestamp
+        public bool   IsInCultivation;
+        public double ExpPerTick;
+        public long   LastSeenServerTimestamp;
     }
 
     [Serializable] public sealed class SkillSave

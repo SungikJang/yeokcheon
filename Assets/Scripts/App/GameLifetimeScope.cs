@@ -42,6 +42,7 @@ namespace App
             builder.RegisterBuildCallback(SetupGlobalEngine);
             
             // ── SaveSystem ─────────────────────────────────────────────
+            builder.Register<SaveSyncer>(Lifetime.Singleton);
             builder.Register<ISaveRepository, LocalRepository>(Lifetime.Singleton);
             builder.Register<MemoryRepository>(Lifetime.Singleton);
             builder.Register<ITimeProvider, SystemTimeProvider>(Lifetime.Singleton);

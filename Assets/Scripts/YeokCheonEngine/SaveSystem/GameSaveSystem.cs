@@ -14,13 +14,15 @@ namespace YeokCheonEngine.SaveSystem
         private const float AutoSaveInterval = 30f; // 초
 
         private readonly MemoryRepository _memory;
+        private readonly SaveSyncer       _syncer;
 
         private float _timer;
         private bool  _isDirty; // 변경 사항이 있으면 true → 저장 필요
 
-        public GameSaveSystem(MemoryRepository memory)
+        public GameSaveSystem(MemoryRepository memory, SaveSyncer syncer)
         {
             _memory = memory;
+            _syncer = syncer;
         }
 
         // VContainer: 게임 시작 시 1회 호출.
@@ -52,6 +54,8 @@ namespace YeokCheonEngine.SaveSystem
         // 현재 캐시 상태를 파일에 저장.
         public async UniTask TakeSnapshot()
         {
+            _syncer.Sync(); // ★ 저장 전에 현재 상태 동기화
+            
             var data = _memory.GetCached();
             if (data == null) return;
 

@@ -21,5 +21,8 @@ namespace YeokCheonDomain.Cultivation
         public int    RealmTier;
         public double CurrentExp;
         public long   LastTickAt;
+        public bool   IsInCultivation;
+        public double ExpPerTick;
+        public long   LastSeenServerTimestamp;
     }
 }

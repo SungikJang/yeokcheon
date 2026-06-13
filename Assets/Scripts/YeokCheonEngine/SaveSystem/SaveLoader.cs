@@ -36,9 +36,12 @@ namespace YeokCheonEngine.SaveSystem
 
             _engine.Dispatch<CultivationState>(new RestoreCultivationTrigger
             {
-                RealmTier  = data.Cultivation.RealmTier,
-                CurrentExp = data.Cultivation.CurrentExp,
-                LastTickAt = data.Cultivation.LastTickAt,
+                RealmTier                = data.Cultivation.RealmTier,
+                CurrentExp               = data.Cultivation.CurrentExp,
+                LastTickAt               = data.Cultivation.LastTickAt,
+                IsInCultivation          = data.Cultivation.IsInCultivation,
+                ExpPerTick               = data.Cultivation.ExpPerTick,
+                LastSeenServerTimestamp  = data.Cultivation.LastSeenServerTimestamp,
             });
 
             _engine.Dispatch<SkillState>(new RestoreSkillTrigger
