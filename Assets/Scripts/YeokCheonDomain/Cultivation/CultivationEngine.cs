@@ -69,7 +69,7 @@ namespace YeokCheonDomain.Cultivation
             if (state.CurrentExp < state.RequiredExp) return;
 
             // 소경지: 자동 돌파, 실패 없음
-            if (!IsBigRealm(state.Tier))
+            if (!CultivationState.IsBigRealm(state.Tier))
             {
                 DoBreakthrough(state);
                 return;
