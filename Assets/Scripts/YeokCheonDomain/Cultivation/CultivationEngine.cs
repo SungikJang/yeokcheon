@@ -30,6 +30,20 @@ namespace YeokCheonDomain.Cultivation
                     state.CurrentExp = t.CurrentExp;
                     state.LastTickAt = t.LastTickAt;
                     break;
+                
+                case CultivationState.ApplyExpTickTrigger t:
+                    if (state.IsInCultivation)
+                        ApplyExp(state, t.ExpGained);
+                    break;
+
+                case CultivationState.RecordTimestampTrigger t:
+                    state.LastSeenServerTimestamp = t.UnixSeconds;
+                    break;
+
+                case CultivationState.ApplyOfflineExpTrigger t:
+                    ApplyExp(state, t.ExpGained);
+                    state.LastSeenServerTimestamp = 0; // 처리 완료 → 초기화
+                    break;
 
                 default:
                     Debug.LogWarning(

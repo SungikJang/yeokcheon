@@ -12,7 +12,7 @@ using YeokCheonDomain.Cultivation;
 using YeokCheonDomain.Sect;
 using YeokCheonDomain.Session;
 using YeokCheonDomain.Skill;
-
+using YeokCheonEngine.TickSystem;
 using GameSaveSystem = YeokCheonEngine.SaveSystem.GameSaveSystem;
 
 namespace App
@@ -44,8 +44,10 @@ namespace App
             // ── SaveSystem ─────────────────────────────────────────────
             builder.Register<ISaveRepository, LocalRepository>(Lifetime.Singleton);
             builder.Register<MemoryRepository>(Lifetime.Singleton);
+            builder.Register<ITimeProvider, SystemTimeProvider>(Lifetime.Singleton);
             builder.RegisterEntryPoint<GameSaveSystem>(Lifetime.Singleton).AsSelf();
             builder.RegisterEntryPoint<SaveLoader>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<CultivationTickSystem>(Lifetime.Singleton).AsSelf();
 
             // ── 진입점 ─────────────────────────────────────────────────
             builder.RegisterEntryPoint<GameEntryPoint>();

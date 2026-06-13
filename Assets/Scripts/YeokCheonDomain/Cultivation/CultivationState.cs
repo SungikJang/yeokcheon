@@ -35,6 +35,30 @@ namespace YeokCheonDomain.Cultivation
         public double    CurrentExp { get; set; } = 0;
         public long      LastTickAt { get; set; } = 0; // Unix timestamp
         
+        
+        public bool   IsInCultivation          { get; set; } = true;   // 수련 중 여부
+        public double ExpPerTick               { get; set; } = 10.0;   // 1틱(1초)당 경험치
+        public long   LastSeenServerTimestamp  { get; set; } = 0;      // 마지막 접속 시각 (Unix초)
+        
+        // 1초마다 자동 경험치 지급
+        public struct ApplyExpTickTrigger : ITrigger
+        {
+            public long ExpGained;
+        }
+
+        // 앱 종료/백그라운드 시 타임스탬프 기록
+        public struct RecordTimestampTrigger : ITrigger
+        {
+            public long UnixSeconds;
+        }
+
+        // 앱 시작 시 오프라인 보상 일괄 지급
+        public struct ApplyOfflineExpTrigger : ITrigger
+        {
+            public double ExpGained;
+            public long   ElapsedSeconds;
+        }
+        
         // 소경지(자동) / 대경지(수동) 구분
         public static bool IsBigRealm(RealmTier tier)
             => (int)tier % 3 == 2; // 대성(index 2, 5, 8...) = 대경지
