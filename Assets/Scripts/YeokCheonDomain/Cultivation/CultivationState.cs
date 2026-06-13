@@ -29,15 +29,15 @@ namespace YeokCheonDomain.Cultivation
         공경입문, 공경중반, 공경대성,
     }
 
-    // 소경지(자동) / 대경지(수동) 구분
-    public static bool IsBigRealm(RealmTier tier)
-        => (int)tier % 3 == 2; // 대성(index 2, 5, 8...) = 대경지
-
     public sealed class CultivationState : GlobalState
     {
         public RealmTier Tier       { get; set; } = RealmTier.삼류입문;
         public double    CurrentExp { get; set; } = 0;
         public long      LastTickAt { get; set; } = 0; // Unix timestamp
+        
+        // 소경지(자동) / 대경지(수동) 구분
+        public static bool IsBigRealm(RealmTier tier)
+            => (int)tier % 3 == 2; // 대성(index 2, 5, 8...) = 대경지
 
         // 현재 경지 이름 (UI 표시용).
         public string RealmName => Tier.ToString();

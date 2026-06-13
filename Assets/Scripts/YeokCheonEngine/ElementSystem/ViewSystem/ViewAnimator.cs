@@ -1,95 +1,110 @@
-// ViewAnimator.cs
-// UniTask 기반 Enter/Exit 애니메이션.
-// DOTween 없이 직접 구현 (의존성 최소화).
-
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace YeokCheonEngine.ElementSystem.ViewSystem
 {
-    public sealed class ViewAnimator : MonoBehaviour
+    public static class ViewAnimator
     {
-        [SerializeField] private ViewAnimationType _enterType = ViewAnimationType.FadeIn;
-        [SerializeField] private ViewAnimationType _exitType  = ViewAnimationType.FadeOut;
-        [SerializeField] private float             _duration  = 0.25f;
-
-        private CanvasGroup _canvasGroup;
-
-        private void Awake()
+        public static async UniTask PlayEnterAsync(
+            ViewBase view, ViewAnimationConfig config,
+            CancellationToken ct = default)
         {
-            // CanvasGroup이 없으면 추가 (Fade 애니에 필요).
-            _canvasGroup = GetComponent<CanvasGroup>();
-            if (_canvasGroup == null)
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
+            if (config.Enter == ViewEnterAnim.None || config.Duration <= 0f) return;
 
-        public async UniTask PlayEnter()
-        {
-            switch (_enterType)
-            {
-                case ViewAnimationType.FadeIn:
-                    await Fade(0f, 1f, _duration);
-                    break;
-                case ViewAnimationType.SlideUp:
-                    await SlideY(-100f, 0f, _duration);
-                    break;
-                case ViewAnimationType.None:
-                default:
-                    break;
-            }
-        }
+            var cg   = GetOrAddCanvasGroup(view);
+            var rect = view.GetComponent<RectTransform>();
+            var dur  = config.Duration;
 
-        public async UniTask PlayExit()
-        {
-            switch (_exitType)
-            {
-                case ViewAnimationType.FadeOut:
-                    await Fade(1f, 0f, _duration);
-                    break;
-                case ViewAnimationType.SlideDown:
-                    await SlideY(0f, -100f, _duration);
-                    break;
-                case ViewAnimationType.None:
-                default:
-                    break;
-            }
-        }
+            PrepareEnter(config.Enter, cg, rect);
+            view.gameObject.SetActive(true);
 
-        private async UniTask Fade(float from, float to, float duration)
-        {
-            _canvasGroup.alpha = from;
             var elapsed = 0f;
-            while (elapsed < duration)
+            while (elapsed < dur)
             {
-                elapsed           += Time.deltaTime;
-                _canvasGroup.alpha =  Mathf.Lerp(from, to, elapsed / duration);
-                await UniTask.Yield(); // 1프레임 대기 (GC 없음)
+                if (ct.IsCancellationRequested) break;
+                elapsed += Time.deltaTime;
+                var t    = Mathf.Clamp01(elapsed / dur);
+                ApplyEnter(config.Enter, cg, rect, EaseOut(t));
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
             }
-            _canvasGroup.alpha = to;
+            ApplyEnter(config.Enter, cg, rect, 1f);
         }
 
-        private async UniTask SlideY(float fromY, float toY, float duration)
+        public static async UniTask PlayExitAsync(
+            ViewBase view, ViewAnimationConfig config,
+            CancellationToken ct = default)
         {
-            var rt      = transform as RectTransform;
-            var elapsed = 0f;
-            while (elapsed < duration)
-            {
-                elapsed      += Time.deltaTime;
-                var pos       = rt.anchoredPosition;
-                pos.y         = Mathf.Lerp(fromY, toY, elapsed / duration);
-                rt.anchoredPosition = pos;
-                await UniTask.Yield();
-            }
-            rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, toY);
-        }
-    }
+            if (config.Exit == ViewExitAnim.None || config.Duration <= 0f) return;
 
-    public enum ViewAnimationType
-    {
-        None,
-        FadeIn,
-        FadeOut,
-        SlideUp,
-        SlideDown
+            var cg   = GetOrAddCanvasGroup(view);
+            var rect = view.GetComponent<RectTransform>();
+            var dur  = config.Duration;
+
+            var elapsed = 0f;
+            while (elapsed < dur)
+            {
+                if (ct.IsCancellationRequested) break;
+                elapsed += Time.deltaTime;
+                var t    = Mathf.Clamp01(elapsed / dur);
+                ApplyExit(config.Exit, cg, rect, EaseIn(t));
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
+            }
+            ApplyExit(config.Exit, cg, rect, 1f);
+        }
+
+        private static void PrepareEnter(ViewEnterAnim anim, CanvasGroup cg, RectTransform rect)
+        {
+            switch (anim)
+            {
+                case ViewEnterAnim.FadeIn:   cg.alpha = 0f; break;
+                case ViewEnterAnim.SlideFromRight:
+                    if (rect) rect.anchoredPosition = new Vector2(Screen.width, 0f); break;
+                case ViewEnterAnim.SlideFromBottom:
+                    if (rect) rect.anchoredPosition = new Vector2(0f, -Screen.height); break;
+                case ViewEnterAnim.ScaleUp:
+                    if (rect) rect.localScale = Vector3.one * 0.85f;
+                    cg.alpha = 0f; break;
+            }
+        }
+
+        private static void ApplyEnter(ViewEnterAnim anim, CanvasGroup cg, RectTransform rect, float t)
+        {
+            switch (anim)
+            {
+                case ViewEnterAnim.FadeIn:   cg.alpha = t; break;
+                case ViewEnterAnim.SlideFromRight:
+                    if (rect) rect.anchoredPosition = new Vector2(Mathf.Lerp(Screen.width, 0f, t), 0f); break;
+                case ViewEnterAnim.SlideFromBottom:
+                    if (rect) rect.anchoredPosition = new Vector2(0f, Mathf.Lerp(-Screen.height, 0f, t)); break;
+                case ViewEnterAnim.ScaleUp:
+                    if (rect) rect.localScale = Vector3.one * Mathf.Lerp(0.85f, 1f, t);
+                    cg.alpha = t; break;
+            }
+        }
+
+        private static void ApplyExit(ViewExitAnim anim, CanvasGroup cg, RectTransform rect, float t)
+        {
+            switch (anim)
+            {
+                case ViewExitAnim.FadeOut:   cg.alpha = 1f - t; break;
+                case ViewExitAnim.SlideToLeft:
+                    if (rect) rect.anchoredPosition = new Vector2(Mathf.Lerp(0f, -Screen.width, t), 0f); break;
+                case ViewExitAnim.SlideToBottom:
+                    if (rect) rect.anchoredPosition = new Vector2(0f, Mathf.Lerp(0f, -Screen.height, t)); break;
+                case ViewExitAnim.ScaleDown:
+                    if (rect) rect.localScale = Vector3.one * Mathf.Lerp(1f, 0.85f, t);
+                    cg.alpha = 1f - t; break;
+            }
+        }
+
+        private static CanvasGroup GetOrAddCanvasGroup(ViewBase view)
+        {
+            var cg = view.GetComponent<CanvasGroup>();
+            return cg != null ? cg : view.gameObject.AddComponent<CanvasGroup>();
+        }
+
+        private static float EaseOut(float t) => 1f - (1f - t) * (1f - t);
+        private static float EaseIn(float t)  => t * t;
     }
 }
