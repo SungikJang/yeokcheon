@@ -127,18 +127,14 @@ namespace YeokCheonEngine.ElementSystem.ViewSystem
         // ── 애니메이션 헬퍼 ───────────────────────────────────────────────
 
         // View에 ViewAnimator가 붙어있으면 애니메이션 재생, 없으면 즉시 완료.
-        private async UniTask PlayEnterAnimation(View view)
+        private static async UniTask PlayEnterAnimation(View view)
         {
-            var animator = view.GetComponent<ViewAnimator>();
-            if (animator != null)
-                await animator.PlayEnter();
+            await ViewAnimator.PlayEnterAsync(view, view.AnimationConfig);
         }
 
-        private async UniTask PlayExitAnimation(View view)
+        private static async UniTask PlayExitAnimation(View view)
         {
-            var animator = view.GetComponent<ViewAnimator>();
-            if (animator != null)
-                await animator.PlayExit();
+            await ViewAnimator.PlayExitAsync(view, view.AnimationConfig);
         }
     }
 }

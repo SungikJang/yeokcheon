@@ -30,6 +30,8 @@ namespace YeokCheonEngine.ElementSystem.ViewSystem
         // Props 비교용: 이전 Props 저장.
         // 타입별로 하나씩 저장 (여러 State 구독 지원).
         private readonly Dictionary<Type, object> _prevProps = new(4);
+        
+        public virtual ViewAnimationConfig AnimationConfig => ViewAnimationConfig.Default;
 
 
         // ── 생명주기 ─────────────────────────────────────────────────────

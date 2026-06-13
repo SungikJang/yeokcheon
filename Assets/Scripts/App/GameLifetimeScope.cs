@@ -39,7 +39,7 @@ namespace App
             builder.Register<SkillEngine>(Lifetime.Singleton);
 
             // ── SaveSystem ─────────────────────────────────────────────
-            builder.Register<LocalRepository>(Lifetime.Singleton);
+            builder.Register<ISaveRepository, LocalRepository>(Lifetime.Singleton);
             builder.Register<MemoryRepository>(Lifetime.Singleton);
             builder.RegisterEntryPoint<GameSaveSystem>(Lifetime.Singleton).AsSelf();
             builder.RegisterEntryPoint<SaveLoader>(Lifetime.Singleton);

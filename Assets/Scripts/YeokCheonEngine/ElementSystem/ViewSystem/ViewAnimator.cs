@@ -7,7 +7,7 @@ namespace YeokCheonEngine.ElementSystem.ViewSystem
     public static class ViewAnimator
     {
         public static async UniTask PlayEnterAsync(
-            ViewBase view, ViewAnimationConfig config,
+            View view, ViewAnimationConfig config,
             CancellationToken ct = default)
         {
             if (config.Enter == ViewEnterAnim.None || config.Duration <= 0f) return;
@@ -32,7 +32,7 @@ namespace YeokCheonEngine.ElementSystem.ViewSystem
         }
 
         public static async UniTask PlayExitAsync(
-            ViewBase view, ViewAnimationConfig config,
+            View view, ViewAnimationConfig config,
             CancellationToken ct = default)
         {
             if (config.Exit == ViewExitAnim.None || config.Duration <= 0f) return;
@@ -98,7 +98,7 @@ namespace YeokCheonEngine.ElementSystem.ViewSystem
             }
         }
 
-        private static CanvasGroup GetOrAddCanvasGroup(ViewBase view)
+        private static CanvasGroup GetOrAddCanvasGroup(View view)
         {
             var cg = view.GetComponent<CanvasGroup>();
             return cg != null ? cg : view.gameObject.AddComponent<CanvasGroup>();
