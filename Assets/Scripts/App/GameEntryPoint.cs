@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using VContainer.Unity;
+using Views.Screens;
 using YeokCheonEngine.ElementSystem.EntitySystem;
 using YeokCheonEngine.ElementSystem.ViewSystem;
 
@@ -34,7 +35,7 @@ namespace App
                 _navigator = new ScreenNavigator(_viewManager, canvas.transform);
 
                 // 첫 화면 Push — CultivationScreen은 다음 단계에서 만든다
-                // _ = _navigator.PushAsync<CultivationScreen>();
+                _ = _navigator.PushAsync<CultivationScreen>();
             }
 
             Debug.Log("[YeokCheonEngine] 게임 시작");

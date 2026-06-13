@@ -38,6 +38,9 @@ namespace App
             builder.Register<SessionEngine>(Lifetime.Singleton);
             builder.Register<SkillEngine>(Lifetime.Singleton);
 
+            // ── GlobalEngine에 SubEngine 연결 (빌드 완료 후) ───────────
+            builder.RegisterBuildCallback(SetupGlobalEngine);
+            
             // ── SaveSystem ─────────────────────────────────────────────
             builder.Register<ISaveRepository, LocalRepository>(Lifetime.Singleton);
             builder.Register<MemoryRepository>(Lifetime.Singleton);
@@ -46,9 +49,6 @@ namespace App
 
             // ── 진입점 ─────────────────────────────────────────────────
             builder.RegisterEntryPoint<GameEntryPoint>();
-
-            // ── GlobalEngine에 SubEngine 연결 (빌드 완료 후) ───────────
-            builder.RegisterBuildCallback(SetupGlobalEngine);
         }
 
         private static void SetupGlobalEngine(IObjectResolver resolver)

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: AssetRegistry
   m_EditorClassIdentifier: Assembly-CSharp::YeokCheonEngine.ElementSystem.AssetRegistry
   _entityEntries: []
-  _viewEntries: []
+  _viewEntries:
+  - TypeFullName: CultivationScreen
+    Prefab: {fileID: 9018708206362092906, guid: 37c720df911584b60812595b00d76fc4, type: 3}
