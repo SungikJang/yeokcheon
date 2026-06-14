@@ -15,9 +15,7 @@ namespace YeokCheonDomain.Skill
                     break;
 
                 case EquipSkillTrigger t:
-                    if (t.SlotIndex is >= 0 and < 3
-                        && state.OwnedSkillIds.Contains(t.SkillId))
-                        state.DantianSlots[t.SlotIndex] = t.SkillId;
+                    Equip(state, t.SkillId, t.SlotIndex);
                     break;
 
                 case UnequipSkillTrigger t:
