@@ -30,6 +30,9 @@ namespace YeokCheonDomain.Skill
                     state.DantianSlots = t.DantianSlotIds ?? new int[3] { -1, -1, -1 };
                     state.SkillStones  = t.SkillStones;
                     break;
+                default:
+                    Debug.LogWarning($"[SkillEngine] 알 수 없는 트리거: {trigger.GetType().Name}");
+                    break;
             }
         }
         
