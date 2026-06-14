@@ -34,5 +34,28 @@ namespace YeokCheonDomain.Skill
                     break;
             }
         }
+        
+        private static void Equip(SkillState state, int skillId, int slotIndex)
+        {
+            if (!state.OwnedSkillIds.Contains(skillId))
+            {
+                Debug.LogWarning($"[SkillEngine] 보유하지 않은 무공: {skillId}");
+                return;
+            }
+
+            Unequip(state, slotIndex);
+
+            // 다른 슬롯에 이미 장착돼 있으면 해제
+            for (int i = 0; i < state.DantianSlots.Length; i++)
+                if (state.DantianSlots[i] == skillId)
+                    state.DantianSlots[i] = -1;
+
+            state.DantianSlots[slotIndex] = skillId;
+        }
+
+        private static void Unequip(SkillState state, int slotIndex)
+        {
+            state.DantianSlots[slotIndex] = -1;
+        }
     }
 }
