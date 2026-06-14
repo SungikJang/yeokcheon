@@ -31,7 +31,7 @@ namespace YeokCheonEngine.SaveSystem
     [Serializable] public sealed class SkillSave
     {
         public int[]    OwnedSkillIds    = Array.Empty<int>();
-        public int[]    DantianSlotIds   = new int[3]; // 장착 슬롯 3개
+        public int[] DantianSlotIds = new int[3] { -1, -1, -1 };
         public int      SkillStones      = 0;
     }
 

@@ -40,7 +40,9 @@ namespace YeokCheonEngine.SaveSystem
             data.Sect.JoinedAt  = sect.JoinedAt;
 
             var skill = _engine.GetState<SkillState>();
-            data.Skill.SkillStones = (int)skill.SkillStones;
+            data.Skill.SkillStones    = skill.SkillStones;
+            data.Skill.OwnedSkillIds  = skill.OwnedSkillIds.ToArray();
+            data.Skill.DantianSlotIds = (int[])skill.DantianSlots.Clone();
 
             var session = _engine.GetState<SessionState>();
             data.Session.PlayerId   = session.PlayerId;
